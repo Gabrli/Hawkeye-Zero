@@ -29,4 +29,3 @@ def calc_error(errors, metric_type):
         raise ValueError(f"Unsupported metric type: {metric_type}")
 
     return EQUATIONS[metric_type](errors)
- 

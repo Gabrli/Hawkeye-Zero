@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from engine.state import StateEstimator
 
@@ -22,3 +23,12 @@ def test_reset_discards_smoothed_state():
 
     assert estimator._smoothed_velocity is None
     assert estimator._smoothed_acceleration is None
+
+
+def test_estimator_rejects_non_increasing_times():
+    estimator = StateEstimator()
+    with pytest.raises(ValueError, match="strictly increasing"):
+        estimator.estimate(
+            [[float(index), 0.0] for index in range(5)],
+            [0.0, 1.0, 2.0, 2.0, 4.0],
+        )

@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from engine.history import ObservationHistory
 
@@ -31,3 +32,10 @@ def test_reset_clears_recent_and_full_history():
     assert history.recent_points() == []
     assert history.recent_times() == []
     assert history.position_at(0.5) is None
+
+
+def test_history_rejects_non_increasing_timestamps():
+    history = ObservationHistory()
+    history.add(1.0, 1.0, 1.0)
+    with pytest.raises(ValueError, match="strictly increasing"):
+        history.add(1.0, 2.0, 2.0)
