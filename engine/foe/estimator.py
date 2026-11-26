@@ -26,7 +26,7 @@ class DescentEstimator:
         self.smoothing = smooth
         self.min_steps = min_steps
         self._recent_steps = []  # (linear transform, translation, scale)
-        self._smoothed_foe = None
+        self._smoothed_foe = None # f
         self._smoothed_time_to_contact = None
 
     def reset(self):
@@ -36,9 +36,9 @@ class DescentEstimator:
     def update(self, step, reliable: bool):
         """step: 3x3 prev -> pcur (homogeneous coordinates)."""
         if reliable and step is not None:
-            linear_transform = step[:2, :2]
-            translation = step[:2, 2]
-            scale = float(np.sqrt(abs(np.linalg.det(linear_transform))))
+            linear_transform = step[:2, :2] # A
+            translation = step[:2, 2] # b
+            scale = float(np.sqrt(abs(np.linalg.det(linear_transform)))) # s 
             if scale > 1.0:
                 self._recent_steps.append((linear_transform.copy(), translation.copy(), scale))
         self._recent_steps = self._recent_steps[-self.window :]
@@ -80,11 +80,13 @@ class DescentEstimator:
                 for matrix, keep in zip(linear_systems, inlier_mask)
                 if keep
             )
+            
             right_hand_side = sum(
                 matrix.T @ offset
                 for matrix, offset, keep in zip(linear_systems, translations, inlier_mask)
                 if keep
             )
+            # normal_matrix (I-A)F | right_hand_side (I-A)F = b (b!)
             if abs(np.linalg.det(normal_matrix)) < 1e-12:
                 return None
             focus_of_expansion = np.linalg.solve(normal_matrix, right_hand_side)

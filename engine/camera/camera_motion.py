@@ -80,7 +80,7 @@ class CameraMotion:
 
     def reset(self):
         self.world_from_frame = np.eye(3)
-        self._prev_gray = None
+        self._prev_gray = None # frame A
         self._prev_thumb = None
 
     @staticmethod
@@ -126,7 +126,7 @@ class CameraMotion:
             fx=self.work_scale,
             fy=self.work_scale,
             interpolation=cv2.INTER_AREA,
-        )
+        ) # frame B
         thumb = cv2.resize(gray_full, (64, 36)).astype(np.float32)
 
         # black/dark frames: no camera motion can be measured, and inliers would come from compression noise / object edges -> not reliable
@@ -179,7 +179,7 @@ class CameraMotion:
         # get good features to track in the previous frame, and track them to the current frame using optical flow
         previous_points = cv2.goodFeaturesToTrack(
             self._prev_gray, self.max_corners, 0.02, 8, mask=mask, blockSize=7
-        )
+        ) # Pa (followed points in previous frame)
         if previous_points is not None and len(previous_points) >= MIN_CORNERS:
             lk = dict(
                 winSize=(21, 21),
@@ -189,11 +189,11 @@ class CameraMotion:
             # Lucas-Kanade - follow the features from the previous frame to the current frame, and back to the previous frame, to filter out bad matches
             current_points, forward_status, _ = cv2.calcOpticalFlowPyrLK(
                 self._prev_gray, gray, previous_points, None, **lk
-            )
+            ) # Pb (followed points in current frame)
             if current_points is not None and forward_status is not None:
                 returned_points, backward_status, _ = cv2.calcOpticalFlowPyrLK(
                     gray, self._prev_gray, current_points, None, **lk
-                )
+                ) # v = Pb - Pa
             else:
                 returned_points, backward_status = None, None
 
@@ -218,9 +218,9 @@ class CameraMotion:
                     method=cv2.RANSAC,
                     ransacReprojThreshold=self.ransac_thresh,
                     maxIters=2000,
-                )
+                ) # transform/step - estimate of [A|b] move transform from previous frame to current frame
                 if affine_transform is not None and inlier_flags is not None:
-                    inliers = int(inlier_flags.sum())
+                    inliers = int(inlier_flags.sum()) # points that fit to camera movement.
                     if (
                         inliers >= self.min_inliers
                         and inliers / valid_tracks.sum() >= self.min_ratio
