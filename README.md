@@ -1,11 +1,12 @@
-# Hawkeye-Zero
-<img width="1280" height="640" alt="image" src="https://github.com/user-attachments/assets/8bc2823d-c514-4c78-8ca6-8a15367f1b69" />
+<img width="1948" height="400" alt="image" src="https://github.com/user-attachments/assets/a6c90a09-a090-429d-a38c-0b41389ca69b" />
 
 Hawkeye-Zero is a Python video-analysis project that detects one selected object, estimates its recent 2D motion, predicts short-term future positions, and writes an annotated video with CSV reports.
 
 The project also contains reusable components for camera-motion compensation, focus-of-expansion (FOE) estimation, and heuristic terrain segmentation. These components are available as separate modules; FOE estimation and terrain segmentation are not currently part of the default `Tracker` processing loop.
 
 > **Model note:** The trajectory predictor is a deterministic kinematic ODE with exponentially decaying acceleration. It is not a Neural ODE and does not train a neural network.
+
+<img width="1280" height="640" alt="image" src="https://github.com/user-attachments/assets/8bc2823d-c514-4c78-8ca6-8a15367f1b69" />
 
 ## Features
 
