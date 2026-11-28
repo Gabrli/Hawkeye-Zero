@@ -1,4 +1,5 @@
 # Hawkeye-Zero
+<img width="1280" height="640" alt="image" src="https://github.com/user-attachments/assets/8bc2823d-c514-4c78-8ca6-8a15367f1b69" />
 
 Hawkeye-Zero is a Python video-analysis project that detects one selected object, estimates its recent 2D motion, predicts short-term future positions, and writes an annotated video with CSV reports.
 
